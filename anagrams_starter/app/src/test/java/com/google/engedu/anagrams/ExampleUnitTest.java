@@ -1,6 +1,11 @@
 package com.google.engedu.anagrams;
 
+import android.content.res.AssetManager;
+
 import org.junit.Test;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import static org.junit.Assert.*;
 
