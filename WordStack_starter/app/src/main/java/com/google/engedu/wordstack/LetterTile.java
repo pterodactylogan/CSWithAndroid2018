@@ -68,11 +68,9 @@ public class LetterTile extends TextView {
 
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
-        /**
-         **
-         **  YOUR CODE GOES HERE
-         **
-         **/
+        if(!frozen && motionEvent.getAction()==MotionEvent.ACTION_DOWN){
+
+        }
         return super.onTouchEvent(motionEvent);
     }
 }

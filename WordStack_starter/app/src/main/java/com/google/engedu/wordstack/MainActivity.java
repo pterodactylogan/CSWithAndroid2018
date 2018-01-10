@@ -19,6 +19,7 @@ import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,13 +38,15 @@ import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int WORD_LENGTH = 5;
+    private static final int WORD_LENGTH = 4;
     public static final int LIGHT_BLUE = Color.rgb(176, 200, 255);
     public static final int LIGHT_GREEN = Color.rgb(200, 255, 200);
     private ArrayList<String> words = new ArrayList<>();
     private Random random = new Random();
     private StackedLayout stackedLayout;
     private String word1, word2;
+
+    Stack<LetterTile> placedTiles = new Stack<LetterTile>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +59,7 @@ public class MainActivity extends AppCompatActivity {
             String line = null;
             while((line = in.readLine()) != null) {
                 String word = line.trim();
-                /**
-                 **
-                 **  YOUR CODE GOES HERE
-                 **
-                 **/
+                if(word.length()==WORD_LENGTH) words.add(word);
             }
         } catch (IOException e) {
             Toast toast = Toast.makeText(this, "Could not load dictionary", Toast.LENGTH_LONG);
@@ -89,11 +88,7 @@ public class MainActivity extends AppCompatActivity {
                     TextView messageBox = (TextView) findViewById(R.id.message_box);
                     messageBox.setText(word1 + " " + word2);
                 }
-                /**
-                 **
-                 **  YOUR CODE GOES HERE
-                 **
-                 **/
+                placedTiles.push(tile);
                 return true;
             }
             return false;
@@ -143,20 +138,48 @@ public class MainActivity extends AppCompatActivity {
     public boolean onStartGame(View view) {
         TextView messageBox = (TextView) findViewById(R.id.message_box);
         messageBox.setText("Game started");
-        /**
-         **
-         **  YOUR CODE GOES HERE
-         **
-         **/
+        int num1 = random.nextInt(words.size());
+        int num2 = random.nextInt(words.size());
+        word1 = words.get(num1);
+        word2 = words.get(num2);
+        Log.i("word1", word1);
+        Log.i("word2", word2);
+        String result="";
+
+        int counter1=0, counter2 = 0;
+        while(counter1<WORD_LENGTH || counter2<WORD_LENGTH){
+            if(counter1>=WORD_LENGTH){
+                result+=word2.substring(counter2);
+                counter2=WORD_LENGTH;
+            }else if(counter2>=WORD_LENGTH){
+                result+=word1.substring(counter1);
+                counter1=WORD_LENGTH;
+            }else {
+                int rand = random.nextInt(2) + 1;
+                if (rand == 1) {
+                    result = result + word1.charAt(counter1);
+                    counter1++;
+                } else {
+                    result = result + word2.charAt(counter2);
+                    counter2++;
+                }
+            }
+        }
+        messageBox.setText(result);
+        for(int i=result.length()-1; i>=0; i--){
+            LetterTile tile = new LetterTile(this,result.charAt(i));
+            //Log.d("tile", result.substring(i, i+1));
+            stackedLayout.push(tile);
+        }
         return true;
     }
 
     public boolean onUndo(View view) {
-        /**
-         **
-         **  YOUR CODE GOES HERE
-         **
-         **/
-        return true;
+        if(!placedTiles.empty()) {
+            LetterTile tile = placedTiles.pop();
+            tile.moveToViewGroup(stackedLayout);
+            return true;
+        }
+        return false;
     }
 }
