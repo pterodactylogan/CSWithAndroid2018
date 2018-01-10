@@ -34,7 +34,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Hello World!"
-            android:id="@+id/message_box" />
+            android:id="@+id/message_box"
+            android:textSize="24dp"/>
 
         <LinearLayout
             android:orientation="horizontal"
