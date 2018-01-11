@@ -50,6 +50,83 @@ public class MainActivity extends AppCompatActivity {
     Stack<LetterTile> placedTiles = new Stack<LetterTile>();
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if(savedInstanceState.containsKey("msg")){
+            TextView msg = (TextView) findViewById(R.id.message_box);
+            msg.setText(savedInstanceState.getString("msg"));
+        }
+        if(savedInstanceState.containsKey("word1")){
+            word1=savedInstanceState.getString("word1");
+        }
+        if(savedInstanceState.containsKey("word2")){
+            word2=savedInstanceState.getString("word2");
+        }
+        if(savedInstanceState.containsKey("letters1")){
+            String letters1= savedInstanceState.getString("letters1");
+            LinearLayout box1 = (LinearLayout) findViewById(R.id.word1);
+            for(int i=0; i<letters1.length(); i++){
+                LetterTile letter = new LetterTile(this, letters1.charAt(i));
+                box1.addView(letter);
+            }
+        }
+        if(savedInstanceState.containsKey("letters2")){
+            String letters2= savedInstanceState.getString("letters2");
+            LinearLayout box2 = (LinearLayout) findViewById(R.id.word2);
+            for(int i=0; i<letters2.length(); i++){
+                LetterTile letter = new LetterTile(this, letters2.charAt(i));
+                box2.addView(letter);
+            }
+        }
+        if(savedInstanceState.containsKey("stack")){
+            String stack = savedInstanceState.getString("stack");
+            for(int i=stack.length()-1; i>=0; i--){
+                LetterTile tile = new LetterTile(this,stack.charAt(i));
+                //Log.d("tile", result.substring(i, i+1));
+                stackedLayout.push(tile);
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        LinearLayout box1 = (LinearLayout) findViewById(R.id.word1);
+        LinearLayout box2 = (LinearLayout) findViewById(R.id.word2);
+        String letters1 = "";
+        String letters2 = "";
+        for(int i=0; i<box1.getChildCount(); i++){
+            if (box1.getChildAt(i) instanceof LetterTile) {
+                LetterTile tile = (LetterTile) box1.getChildAt(i);
+                letters1+=tile.getChar();
+            }
+        }
+        for(int i=0; i<box2.getChildCount(); i++){
+            if (box2.getChildAt(i) instanceof LetterTile) {
+                LetterTile tile = (LetterTile) box2.getChildAt(i);
+                letters2+=tile.getChar();
+            }
+        }
+
+        String remaining = "";
+        Stack<View> stack = stackedLayout.getTiles();
+        while(!stack.isEmpty()){
+            LetterTile tile = (LetterTile)stack.pop();
+            remaining+=tile.getChar();
+        }
+        Log.i("letters1", letters1);
+        Log.i("letters2", letters2);
+        Log.i("stack", remaining);
+        TextView messageBox = (TextView) findViewById(R.id.message_box);
+        outState.putString("stack", remaining);
+        outState.putString("letters1", letters1);
+        outState.putString("letters2", letters2);
+        outState.putString("word1", word1);
+        outState.putString("word2", word2);
+        outState.putString("msg", messageBox.getText().toString());
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -120,7 +197,8 @@ public class MainActivity extends AppCompatActivity {
                 case DragEvent.ACTION_DROP:
                     // Dropped, reassign Tile to the target Layout
                     LetterTile tile = (LetterTile) event.getLocalState();
-                    tile.moveToViewGroup((ViewGroup) v);
+                    ViewGroup group = (ViewGroup) v;
+                    tile.moveToViewGroup(group);
                     if (stackedLayout.empty()) {
                         TextView messageBox = (TextView) findViewById(R.id.message_box);
                         messageBox.setText(word1 + " " + word2);
@@ -184,5 +262,9 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+
+    public void checkForDataAndRestoreGame(Bundle savedInstanceState){
+
     }
 }

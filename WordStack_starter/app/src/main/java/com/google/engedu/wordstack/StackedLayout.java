@@ -57,4 +57,8 @@ public class StackedLayout extends LinearLayout {
         tiles.clear();
         removeAllViews();
     }
+
+    public Stack<View> getTiles(){
+        return tiles;
+    }
 }

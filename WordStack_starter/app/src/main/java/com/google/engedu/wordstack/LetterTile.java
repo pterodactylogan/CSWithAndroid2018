@@ -42,6 +42,10 @@ public class LetterTile extends TextView {
         setBackgroundColor(Color.rgb(255, 255, 200));
     }
 
+    public String getChar(){
+        return this.letter.toString();
+    }
+
     public void moveToViewGroup(ViewGroup targetView) {
         ViewParent parent = getParent();
         if (parent instanceof StackedLayout ) {
